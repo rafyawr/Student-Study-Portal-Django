@@ -63,7 +63,7 @@ A Django project that includes views for YouTube search, notes, homework, dictio
 - **Todo List:** Manage a list of tasks.
 - **Unit Conversion:** Convert units of measurement.
 - **Book Search:** Search for books.
-- **Contact Form:** Send messages to the admin.
+- **Contact Form:** Contact to Admin.
 
 ## Contributing
 Contributions are welcome! Please follow these steps:
