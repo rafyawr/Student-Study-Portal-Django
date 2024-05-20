@@ -1,7 +1,7 @@
 # Student-Study-Portal-Django
 
 ## Description
-A Django project that includes views for YouTube search, notes, homework, dictionary, Wikipedia search, todo list, unit conversion, and book search functionality.
+Student-Study-Portal-Django is a versatile web application built with Django, offering students a centralized platform for enhanced learning and organization. It includes features such as YouTube and Wikipedia search, notes and homework management, dictionary lookup, unit conversion, book search, and a contact form for seamless communication.
 
 ![student study portal](https://github.com/CodeWithRanjHa/Animi-Website-With-Django/assets/167714618/91e437ab-3dcb-490e-8b59-d434c9b01bdc)
 
