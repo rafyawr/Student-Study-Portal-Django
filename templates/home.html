@@ -21,6 +21,11 @@
         margin: 16px; /* Add some margin for spacing */
 
     }
+
+    .container:hover {
+    transform: scale(1.05);
+    box-shadow: 0px 8px 16px rgba(255, 255, 255, 0.2);
+}
     .container a {
         text-decoration: none; /* Remove underline */
         color: inherit; /* Inherit text color from parent */
@@ -40,7 +45,67 @@
         background-color: #f4f4f4;
         text-align: center;
     }
+    body.dark .container {
+    background-color: #222222; /* Dark background for cards */
+    color: #ffffff; /* Light text */
+}
+
+body.dark-mode {
+    background: linear-gradient(135deg, #121212, #1e1e1e);
+}
+body.dark .description {
+    background-color: #333333; /* Even darker for description area */
+    color: #ffffff; /* Light text */
+}
+/* DARK MODE styles */
+body.dark-mode {
+    background-color: #121212;
+    color: #ffffff;
+}
+
+body.dark-mode .container {
+    background-color: #222222;
+    color: #ffffff;
+}
+
+body.dark-mode .description {
+    background-color: #333333;
+    color: #ffffff;
+}
+
+body.dark-mode .navigationWrapper {
+    background-color: #111111;
+    box-shadow: 0 5px 15px 0 rgba(255, 255, 255, 0.1);
+}
+/* Default (light mode) styles */
+input, textarea, select {
+    background-color: #ffffff; /* white background */
+    color: #000000; /* black text */
+    border: 1px solid #ccc;
+    padding: 8px;
+    border-radius: 5px;
+    width: 100%;
+    margin-bottom: 10px;
+    transition: background-color 0.3s, color 0.3s;
+}
+
+/* Dark mode styles */
+body.dark-mode input,
+body.dark-mode textarea,
+body.dark-mode select {
+    background-color: #2a2a2a; /* dark gray background */
+    color: #ffffff; /* white text */
+    border: 1px solid #555; /* dark border */
+}
+
+/* Optional: Make placeholder text lighter in dark mode */
+body.dark-mode input::placeholder,
+body.dark-mode textarea::placeholder {
+    color: #bbbbbb;
+}
+
 </style>
+
 <br>
 <br>
 
@@ -89,8 +154,7 @@
         <img src="{% static 'images/dictionary.jpg' %}" alt="Image" class="image">
         <div class="description">
             <h2>Dictionary</h2>
-            <p>A vocabulary from a book is troubling you? No problem, enter the word, and the meaning will be displayed
-                almost instantaneously.</p>
+            <p>A vocabulary from a book is troubling you? No problem, enter the word, and you'll get the meaning.</p>
         </div>
         </a>
     </div>

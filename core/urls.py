@@ -1,10 +1,9 @@
 from django.urls import path
-from .views import home, youtube_view, create_todo, delete_todo, todo, books, dictionary_view, wikipedia_view, notes, note_detail, homework, delete_homework, delete_note, conversion, contact_us
+from .views import home, youtube_view, create_todo, delete_todo, todo, books, dictionary_view, wikipedia_view, notes, note_detail, homework, delete_homework, delete_note, conversion
 
 urlpatterns = [
     path('', home, name='home'),
     path("books", books, name="books"),
-    path("contact", contact_us, name="contactus"),
     path("dict", dictionary_view, name="dictionary"),
     path('youtube-search', youtube_view, name='youtube-search'),
     path('todo', todo, name='todo'),

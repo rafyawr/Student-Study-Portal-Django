@@ -9,36 +9,41 @@ def home(request):
     return render(request, 'home.html')
 
 
+from youtubesearchpython import VideosSearch
+
 def youtube_view(request):
     if request.method == 'POST':
-        text = request.POST.get('text', '')  
-        video = VideosSearch(text, limit=10)
+        text = request.POST.get('search', '')
+
+        # Always trust the user's input — no modification
+        video_search = VideosSearch(text, limit=10)
+        results = video_search.result().get('result', [])
+
         result_list = []
-        for i in video.result()['result']:
+        for i in results:
             result_dict = {
-                'input': text,
-                'title': i['title'],
-                'duration': i['duration'],
-                'thumbnail': i['thumbnails'][0]['url'],
-                'channel': i['channel']['name'],
-                'link': i['link'],
-                'views': i['viewCount']['short'],
-                'published': i['publishedTime']
+                'title': i.get('title'),
+                'duration': i.get('duration'),
+                'thumbnail': i.get('thumbnails', [{}])[0].get('url'),
+                'channel': i.get('channel', {}).get('name'),
+                'link': i.get('link'),
+                'views': i.get('viewCount', {}).get('short'),
+                'published': i.get('publishedTime'),
+                'description': ''.join([desc.get('text', '') for desc in i.get('descriptionSnippet', [])]) if i.get('descriptionSnippet') else ''
             }
-            desc = ''
-            if 'descriptionSnippet' in i and i['descriptionSnippet']:
-                for j in i['descriptionSnippet']:
-                    desc += j['text']
-            result_dict['description'] = desc
             result_list.append(result_dict)
-        
+
         context = {
-            'results': result_list
+            'results': result_list,
+            'search_text': text,  # send back user input to display on page
         }
         return render(request, 'youtube.html', context)
+
     else:
-        print('An error')
         return render(request, 'youtube.html')
+
+
+
 
 
 def notes(request):
@@ -133,18 +138,29 @@ def wikipedia_view(request):
     if request.method == 'POST':
         text = request.POST.get('search_query')
         if text:
-            search = wikipedia.page(text)
-            context = {
-                'title': search.title,
-                'link': search.url,
-                'details': search.summary
-            }
+            try:
+                search_results = wikipedia.search(text)
+                if search_results:
+                    # Take the first best match
+                    page = wikipedia.page(search_results[0])
+                    context = {
+                        'title': page.title,
+                        'link': page.url,
+                        'details': page.summary
+                    }
+                else:
+                    context = {'error_message': 'No results found. Try another query.'}
+            except wikipedia.exceptions.DisambiguationError as e:
+                context = {'error_message': f"Your search query is too vague. Suggestions: {e.options}"}
+            except wikipedia.exceptions.PageError:
+                context = {'error_message': "Page not found. Try refining your query."}
         else:
             context = {'error_message': 'Please enter a search query.'}
     else:
         context = {}
-    
+
     return render(request, 'wikipedia.html', context)
+
 
 
 def todo(request):
@@ -248,8 +264,6 @@ def search_books(query):
         return [] 
     
 
-def contact_us(request):
-    return render(request, 'contact.html')
 
 
 
