@@ -3,7 +3,11 @@ from youtubesearchpython import VideosSearch
 from .models import ToDo, Notes, Homework
 import requests
 import wikipedia
+from django.contrib.auth.decorators import login_required
 
+@login_required
+def home(request):
+    return render(request, 'core/home.html')
 
 def home(request):
     return render(request, 'home.html')
@@ -45,15 +49,15 @@ def youtube_view(request):
 
 
 
-
+@login_required
 def notes(request):
-    notes = Notes.objects.all()
+    notes = Notes.objects.filter(user=request.user)
 
     if request.method == 'POST':
         title = request.POST.get('title')
         description = request.POST.get('description')
         if title and description:
-            Notes.objects.create(title=title, description=description)
+            Notes.objects.create(user=request.user, title=title, description=description)
             return redirect('notes') 
 
     context = {
@@ -62,8 +66,10 @@ def notes(request):
     return render(request, 'notes.html', context)
 
 
+
 def note_detail(request, pk):
-    note = Notes.objects.get(pk=pk)
+    note = Notes.objects.get(pk=pk, user=request.user)
+
     context ={
         "note":note
     }
@@ -72,38 +78,42 @@ def note_detail(request, pk):
 
 
 def delete_note(request, pk):
-    note = Notes.objects.get(pk=pk)
+    note = Notes.objects.get(pk=pk, user=request.user)
     note.delete()
     return redirect('notes')
 
 
+@login_required
 def homework(request):
-    homeworks = Homework.objects.all()
-    context = {
-        'homeworks': homeworks
-    }
+    homeworks = Homework.objects.filter(user=request.user)
 
     if request.method == 'POST':
         subject = request.POST.get('subject')
         title = request.POST.get('title')
         description = request.POST.get('description')
         due = request.POST.get('due')
-        is_finished = request.POST.get('is_finished', False)
-        
-        homework = Homework.objects.create(
-            subject=subject,
-            title=title,
-            description=description,
-            due=due,
-            is_finished=is_finished
-        )
-        return redirect('homework')
+        is_finished = request.POST.get('is_finished') == 'on'  # Checkbox
 
+        if subject and title and description and due:
+            Homework.objects.create(
+                user=request.user,
+                subject=subject,
+                title=title,
+                description=description,
+                due=due,
+                is_finished=is_finished
+            )
+            return redirect('homework')
+
+    context = {
+        'homeworks': homeworks
+    }
     return render(request, 'homework.html', context)
 
 
+
 def delete_homework(request, homework_id):
-    homework = Homework.objects.get(id=homework_id)
+    homework = Homework.objects.get(id=homework_id, user=request.user)
     homework.delete()
     return redirect('homework')
 
@@ -162,22 +172,22 @@ def wikipedia_view(request):
     return render(request, 'wikipedia.html', context)
 
 
-
+@login_required
 def todo(request):
-    todos = ToDo.objects.all()
+    todos = ToDo.objects.filter(user=request.user)
     todos_done = todos.filter(is_finished=True)
     return render(request, 'todo.html', {'todos': todos, 'todos_done': todos_done})
 
 def create_todo(request):
     if request.method == 'POST':
         title = request.POST.get('title')
-        ToDo.objects.create(title=title)
+        ToDo.objects.create(user=request.user, title=title)
     return redirect('todo')
 
 def delete_todo(request, todo_id):
 
     if request.method == 'POST':
-        todo = ToDo.objects.get(id=todo_id)
+        todo = ToDo.objects.get(id=todo_id, user=request.user)
         todo.delete()
     return redirect('todo')
 

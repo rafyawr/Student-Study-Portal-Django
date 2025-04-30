@@ -1,8 +1,11 @@
 from django.db import models
+from django.contrib.auth.models import User
 
-
+def get_default_user():
+    return User.objects.get(username="rafayshahjehan").id 
 
 class ToDo(models.Model):
+    user = models.ForeignKey(User, on_delete=models.CASCADE, null=True, blank=True)
     title = models.CharField(max_length=200)
     is_finished = models.BooleanField(default=False)
 
@@ -12,6 +15,7 @@ class ToDo(models.Model):
 
 
 class Notes(models.Model):
+    user = models.ForeignKey(User, on_delete=models.CASCADE, null=True, blank=True)
     title = models.CharField(max_length=200)
     description = models.CharField(max_length=500)
 
@@ -20,6 +24,7 @@ class Notes(models.Model):
 
 
 class Homework(models.Model):
+    user = models.ForeignKey(User, on_delete=models.CASCADE, null=True, blank=True)
     subject = models.CharField(max_length=100)
     title = models.CharField(max_length=200)
     description = models.TextField(max_length=600)

@@ -108,7 +108,90 @@ body.dark-mode textarea::placeholder {
 
 <br>
 <br>
+<div class="welcome-container">
+    <div class="welcome-card">
+      <h1>👋 Welcome{% if user.is_authenticated %}, <span>{{ user.first_name|default:user.username }}</span>{% endif %}!</h1>
+  
+      {% if user.is_authenticated %}
+        <p>You are logged in.</p>
+        <a href="{% url 'logout' %}" class="btn">Logout</a>
+      {% else %}
+        <p>You are not logged in.</p>
+        <a href="{% url 'login' %}" class="btn">Login</a>
+        <a href="{% url 'register' %}" class="btn">Register</a>
+      {% endif %}
+    </div>
+  </div>
+  
+  <style>
+  /* Container centers the card */
+  .welcome-container {
+    display: flex;
+    justify-content: center;
+    align-items: center;
+    padding: 40px 20px;
+  }
+  
+  /* Main card style */
+  .welcome-card {
+    background-color: #f3f4f6; /* light mode background */
+    color: #1f2937;            /* light mode text */
+    padding: 30px;
+    border-radius: 12px;
+    text-align: center;
+    box-shadow: 0 8px 16px rgba(0, 0, 0, 0.15);
+    max-width: 800px;
+    width: 100%;
+    transition: all 0.3s ease;
+  }
+  
+  body.dark-mode .welcome-card {
+  background-color: #1f2937; /* dark background */
+  color: #f9fafb;            /* light text */
+}
 
+body.dark-mode .welcome-card .btn {
+  background-color: #2563eb;
+}
+
+body.dark-mode .welcome-card .btn:hover {
+  background-color: #1d4ed8;
+}
+
+  
+  /* Typography */
+  .welcome-card h1 {
+    font-size: 32px;
+    margin-bottom: 12px;
+  }
+  
+  .welcome-card h1 span {
+    color: #3b82f6; /* blue accent */
+    font-weight: bold;
+  }
+  
+  .welcome-card p {
+    margin-bottom: 20px;
+    font-size: 17px;
+  }
+  
+  /* Buttons */
+  .welcome-card .btn {
+    background-color: #3b82f6;
+    color: white;
+    padding: 10px 20px;
+    text-decoration: none;
+    border-radius: 6px;
+    margin: 0 6px;
+    transition: background-color 0.3s ease;
+    display: inline-block;
+  }
+  
+  .welcome-card .btn:hover {
+    background-color: #2563eb;
+  }
+  </style>
+  
 <div class="container-group">
     <div class="container">
         <a href="{% url 'books' %}">
