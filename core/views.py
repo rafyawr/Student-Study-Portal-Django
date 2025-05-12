@@ -111,7 +111,6 @@ def homework(request):
     return render(request, 'homework.html', context)
 
 
-
 def delete_homework(request, homework_id):
     homework = Homework.objects.get(id=homework_id, user=request.user)
     homework.delete()
@@ -119,12 +118,6 @@ def delete_homework(request, homework_id):
 
 
 def dictionary_view(request):
-    input_word = None
-    phonetics = None
-    definition = None
-    example = None
-    audio = None
-
     input_word = None
     word_data = None
 
@@ -136,7 +129,21 @@ def dictionary_view(request):
             if response.status_code == 200:
                 data = response.json()
                 if data:
-                    word_data = data[0]
+                    entry = data[0]
+                    phonetic = entry.get('phonetic', '')
+                    audio = ''
+                    meanings = entry.get('meanings', [])
+                    for phon in entry.get('phonetics', []):
+                        if phon.get('audio'):
+                            audio = phon['audio']
+                            break
+
+                    word_data = {
+                        'word': entry.get('word'),
+                        'phonetic': phonetic,
+                        'audio': audio,
+                        'meanings': meanings
+                    }
 
     context = {
         'input': input_word,
@@ -144,30 +151,50 @@ def dictionary_view(request):
     }
     return render(request, 'dictionary.html', context)
 
+
+import wikipedia
+from django.shortcuts import render
+
 def wikipedia_view(request):
+    context = {}
+    
     if request.method == 'POST':
-        text = request.POST.get('search_query')
-        if text:
+        query = request.POST.get('search_query', '').strip()
+
+        if not query:
+            context['error_message'] = "Please enter a search query."
+        else:
             try:
-                search_results = wikipedia.search(text)
-                if search_results:
-                    # Take the first best match
-                    page = wikipedia.page(search_results[0])
-                    context = {
+                # Set language to English (optional, but ensures consistency)
+                wikipedia.set_lang("en")
+                
+                # Perform search
+                search_results = wikipedia.search(query)
+
+                if not search_results:
+                    context['error_message'] = f"No results found for '{query}'."
+                else:
+                    # Attempt to fetch the most relevant page
+                    page_title = search_results[0]
+                    page = wikipedia.page(page_title, auto_suggest=False)
+                    summary = wikipedia.summary(page_title, sentences=6)
+
+                    context.update({
                         'title': page.title,
                         'link': page.url,
-                        'details': page.summary
-                    }
-                else:
-                    context = {'error_message': 'No results found. Try another query.'}
-            except wikipedia.exceptions.DisambiguationError as e:
-                context = {'error_message': f"Your search query is too vague. Suggestions: {e.options}"}
-            except wikipedia.exceptions.PageError:
-                context = {'error_message': "Page not found. Try refining your query."}
-        else:
-            context = {'error_message': 'Please enter a search query.'}
-    else:
-        context = {}
+                        'details': summary,
+                        'query': query
+                    })
+
+            except wikipedia.DisambiguationError as e:
+                context['error_message'] = (
+                    f"Your query is too broad. Try being more specific. "
+                    f"Here are some suggestions: {', '.join(e.options[:5])}"
+                )
+            except wikipedia.PageError:
+                context['error_message'] = "Wikipedia page not found. Please try another query."
+            except Exception as e:
+                context['error_message'] = f"Unexpected error: {str(e)}"
 
     return render(request, 'wikipedia.html', context)
 
